@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sixliu.creditloan.workflow.dao.WorkflowTaskModelDao" >
+
+    <resultMap id="WorkflowTaskModelResult" type="com.sixliu.creditloan.workflow.entity.WorkflowTaskModel" >
+        <id column="id"                    property="id"              jdbcType="VARCHAR" />
+        <result column="name"              property="name"            jdbcType="VARCHAR" />
+        <result column="job_id"            property="jobId"           jdbcType="VARCHAR" />
+        <result column="phase"             property="phase"           jdbcType="INTEGER" />
+        <result column="type"              property="type"            jdbcType="VARCHAR" />
+        <result column="worker"            property="worker"          jdbcType="VARCHAR" />
+        <result column="version"           property="version"         jdbcType="INTEGER" />
+        <result column="update_user_id"    property="updateUserId"    jdbcType="VARCHAR" />
+        <result column="update_date"       property="updateDate"      jdbcType="TIMESTAMP" />
+        <result column="create_user_id"    property="createUserId"    jdbcType="VARCHAR" />
+        <result column="create_date"       property="createDate"      jdbcType="TIMESTAMP" />
+    </resultMap>
+    
+    <parameterMap id="WorkflowTaskModelParameter" type="com.sixliu.creditloan.workflow.entity.WorkflowTaskModel"/>
+    
+    <!-- from 表 -->
+    <sql id="from_table">
+    	from workflow_task_model
+    </sql>
+    
+
+    
+    <!-- 查询通用列 -->
+    <sql id="select_common_column">
+    	select 
+    		`id`,
+	        `name`,
+	        job_id,
+	        `phase`,
+	        `type`,
+	        `worker`,
+	        `remarks`,
+	        `version`,
+	        update_user_id,
+	        update_date,
+	        create_user_id,
+	        create_date
+    </sql>
+    
+    <!-- intsert to 表 -->
+    <sql id="insert_common_table">
+    	insert into workflow_task_model(`id`,
+    								`name`,
+    								job_id,
+    								`phase`,
+    								`type`,
+    								`worker`,
+    	 							`remarks`,
+    	 							update_user_id,
+    	 							create_user_id
+    	 							)
+    	 					 values(#{id},
+    	 							#{name},
+    	 							#{jobId},
+    	 							#{phase},
+    	 							#{type},
+    	 							#{worker},
+    		   						#{remarks},
+    		   						#{updateUserId},
+    		   						#{createUserId}
+    		   						)
+    </sql>
+
+    <sql id="delete_from_table">
+    	delete from workflow_task_model
+    </sql>
+    
+	<select id="get" resultMap="WorkflowTaskModelResult">
+		<include refid="select_common_column"/>
+		<include refid="from_table"/>
+        where 1=1
+        and `id` =#{id}
+    </select>
+    
+    <select id="getByName" resultMap="WorkflowTaskModelResult">
+		<include refid="select_common_column"/>
+		<include refid="from_table"/>
+        where 1=1
+        and `name` =#{name}
+    </select>
+    
+    <insert id="insert" parameterMap="WorkflowTaskModelParameter">
+    	<selectKey keyProperty="id" resultType="java.lang.String" order="BEFORE">
+              select uuid()
+    	</selectKey>
+    	<include refid="insert_common_table"></include>
+	</insert>
+	
+	<select id="listByJobId" resultMap="WorkflowTaskModelResult">
+		<include refid="select_common_column"/>
+		<include refid="from_table"/>
+        where 1=1
+        and `job_id` =#{jobId}
+    </select>
+    
+    <select id="getByJobIdAndPhase" resultMap="WorkflowTaskModelResult">
+		<include refid="select_common_column"/>
+		<include refid="from_table"/>
+        where 1=1
+        and `job_id` =#{jobId}
+        and `phase` =#{phase}
+    </select>
+	
+	<delete id="delete">
+		<include refid="delete_from_table"/>
+		where `id`=#{id}
+	</delete>
+
+</mapper>
