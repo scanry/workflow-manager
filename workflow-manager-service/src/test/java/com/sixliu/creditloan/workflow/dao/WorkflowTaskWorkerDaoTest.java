@@ -6,9 +6,11 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.sixliu.creditloan.workflow.BaseTest;
-import com.sixliu.creditloan.workflow.entity.WorkflowTaskModel;
-import com.sixliu.creditloan.workflow.entity.WorkflowTaskWorker;
 import com.sixliu.workflow.constant.WorkerType;
+import com.sixliu.workflow.dao.WorkflowTaskModelDao;
+import com.sixliu.workflow.dao.WorkflowTaskWorkerDao;
+import com.sixliu.workflow.entity.WorkflowTaskModel;
+import com.sixliu.workflow.entity.WorkflowTaskWorker;
 
 /**
 *@author:MG01867

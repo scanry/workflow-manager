@@ -3,6 +3,7 @@ package com.sixliu.creditloan.workflow.util;
 import org.junit.Test;
 
 import com.sixliu.creditloan.workflow.BaseTest;
+import com.sixliu.workflow.util.ListUtils;
 
 /**
 *@author:MG01867

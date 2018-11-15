@@ -4,7 +4,8 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.sixliu.creditloan.workflow.BaseTest;
-import com.sixliu.creditloan.workflow.entity.WorkflowJobModel;
+import com.sixliu.workflow.dao.WorkflowJobModelDao;
+import com.sixliu.workflow.entity.WorkflowJobModel;
 
 /**
 *@author:MG01867

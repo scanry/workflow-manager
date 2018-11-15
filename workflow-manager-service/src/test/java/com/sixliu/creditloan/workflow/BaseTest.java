@@ -16,7 +16,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.google.gson.Gson;
-import com.sixliu.creditloan.workflow.StartUp;
+import com.sixliu.workflow.StartUp;
 
 /**
  * @author:MG01867
