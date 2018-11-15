@@ -34,10 +34,7 @@ public enum TaskEventType {
 	OVERRULED,
 
 	/** 流程任务转移 **/
-	TRANSFERRED,
-
-	/** 流程任务取消 **/
-	CANCELED;
+	TRANSFERRED;
 
 	private final static Set<String> names;
 
