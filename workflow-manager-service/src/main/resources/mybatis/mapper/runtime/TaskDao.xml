@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sixliu.workflow.runtime.repository.dao.TaskDao">
+
+	<resultMap id="EntityResult" type="com.sixliu.workflow.runtime.repository.entity.Task">
+		<id column="id" property="id" jdbcType="VARCHAR" />
+		<result column="name" property="name" jdbcType="VARCHAR" />
+		<result column="job_id" property="jobId" jdbcType="VARCHAR" />
+		<result column="model_id" property="modelId" jdbcType="VARCHAR" />
+		<result column="phase" property="phase" jdbcType="INTEGER" />
+		<result column="type" property="type" jdbcType="VARCHAR" />
+		<result column="worker" property="worker" jdbcType="VARCHAR" />
+		<result column="owner_user_id" property="ownerUserId" jdbcType="VARCHAR" />
+		<result column="status" property="status" jdbcType="VARCHAR" />
+		<result column="version" property="version" jdbcType="INTEGER" />
+		<result column="update_user_id" property="updateUserId" jdbcType="VARCHAR" />
+		<result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
+		<result column="create_user_id" property="createUserId" jdbcType="VARCHAR" />
+		<result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
+	</resultMap>
+
+	<parameterMap id="EntityParameter" type="com.sixliu.workflow.runtime.repository.entity.Task" />
+
+	<!-- 表名 -->
+	<sql id="table_name">task</sql>
+
+
+	<!-- 查询通用列 -->
+	<sql id="select_common_column">
+		select
+		`id`,
+		`name`,
+		job_id,
+		model_id,
+		`phase`,
+		`type`,
+		`worker`,
+		owner_user_id,
+		`status`,
+		`remarks`,
+		`version`,
+		update_user_id,
+		update_date,
+		create_user_id,
+		create_date
+	</sql>
+
+	<select id="get" resultMap="EntityResult">
+		<include refid="select_common_column" />
+		from
+		<include refid="table_name" />
+		where 1=1
+		and `id` =#{id}
+	</select>
+
+	<insert id="insert" parameterMap="EntityParameter">
+		<selectKey keyProperty="id" resultType="java.lang.String" order="BEFORE">
+			select uuid()
+		</selectKey>
+		insert into
+		<include refid="table_name" />
+		(`id`,
+		`name`,
+		job_id,
+		model_id,
+		`phase`,
+		`type`,
+		`worker`,
+		`status`,
+		`remarks`,
+		update_user_id,
+		create_user_id
+		)
+		values(#{id},
+		#{name},
+		#{jobId},
+		#{modelId},
+		#{phase},
+		#{type},
+		#{worker},
+		#{status},
+		#{remarks},
+		#{updateUserId},
+		#{createUserId}
+		)
+	</insert>
+
+	<select id="listByRoleId" resultMap="EntityResult">
+		<include refid="select_common_column" />
+		from
+		<include refid="table_name" />
+		where 1=1
+		and role_id =#{roleId}
+	</select>
+
+	<select id="listByRoleIdAndStatus" resultMap="EntityResult">
+		<include refid="select_common_column" />
+		from
+		<include refid="table_name" />
+		where 1=1
+		and role_id =#{roleId}
+		and `status` =#{status}
+	</select>
+</mapper>

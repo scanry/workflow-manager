@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sixliu.workflow.config.repository.dao.SubprocessModelDao">
+
+	<resultMap id="EntityResult" type="com.sixliu.workflow.config.repository.entity.SubprocessModel">
+		<id column="id" property="id" jdbcType="VARCHAR" />
+		<result column="task_id" property="taskId" jdbcType="VARCHAR" />
+		<result column="job_id" property="jobId" jdbcType="VARCHAR" />
+		<result column="remark" property="remark" jdbcType="VARCHAR" />
+		<result column="version" property="version" jdbcType="INTEGER" />
+		<result column="update_user_id" property="updateUserId" jdbcType="VARCHAR" />
+		<result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
+		<result column="create_user_id" property="createUserId" jdbcType="VARCHAR" />
+		<result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
+	</resultMap>
+
+	<parameterMap id="EntityParameter" type="com.sixliu.workflow.config.repository.entity.SubprocessModel" />
+
+	<!-- 表名 -->
+	<sql id="table_name">subprocess_model</sql>
+
+	<!-- 查询通用列 -->
+	<sql id="select_common_column">
+		select
+		`id`,
+		`task_id`,
+		job_id,
+		`remark`,
+		`version`,
+		update_user_id,
+		update_date,
+		create_user_id,
+		create_date
+	</sql>
+
+	<select id="get" resultMap="EntityResult">
+		<include refid="select_common_column" />
+		from
+		<include refid="table_name" />
+		where 1=1
+		and `id` =#{id}
+	</select>
+
+	<insert id="insert" parameterMap="EntityParameter">
+		<selectKey keyProperty="id" resultType="java.lang.String" order="BEFORE">
+			select uuid()
+		</selectKey>
+		insert into
+		<include refid="table_name" />
+		(`id`,
+		`task_id`,
+		job_id,
+		`remark`,
+		update_user_id,
+		create_user_id
+		)
+		values(#{id},
+		#{taskId},
+		#{jobId},
+		#{remark},
+		#{updateUserId},
+		#{createUserId}
+		)
+	</insert>
+
+	<delete id="delete">
+		delete from
+		<include refid="table_name" />
+		where `id`=#{id}
+	</delete>
+
+	<select id="getByTaskId" resultMap="EntityResult">
+		<include refid="select_common_column" />
+		from
+		<include refid="table_name" />
+		where 1=1
+		and `task_id` =#{taskId}
+	</select>
+</mapper>

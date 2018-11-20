@@ -5,11 +5,11 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.cloud.client.SpringCloudApplication;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import com.sixliu.app.user.service.UserService;
-import com.sixliu.workflow.dao.BaseDao;
+import com.sixliu.workflow.config.repository.dao.JobModelDao;
+import com.sixliu.workflow.history.repository.dao.JobRecordDao;
+import com.sixliu.workflow.runtime.repository.dao.JobDao;
 
 
 /**
@@ -17,22 +17,15 @@ import com.sixliu.workflow.dao.BaseDao;
  * @date:2018年6月15日
  * @E-mail:359852326@qq.com
  * @version:
- * @describe 服务启动类
+ * @describe 服务启动类 
  */
 @SpringCloudApplication
-@EnableFeignClients(basePackageClasses = { UserService.class})
+@EnableFeignClients(basePackageClasses = { com.sixliu.app.ServiceName.class})
 @EnableTransactionManagement 
-@MapperScan(basePackageClasses=BaseDao.class)
+@MapperScan(basePackageClasses= {JobModelDao.class,JobDao.class,JobRecordDao.class})
 public class StartUp implements WebMvcConfigurer {
 
 	public static void main(String[] args) {
 		SpringApplication.run(StartUp.class,args);
-	}
-
-	/**
-	 * 拦截器配置
-	 */
-	public void addInterceptors(InterceptorRegistry registry) {
-
 	}
 }

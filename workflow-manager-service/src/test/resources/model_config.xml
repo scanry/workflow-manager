@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jobs>
+	<job name="居乐贷授信流程" createRole="客户">
+		<tasks>
+			<task name="预创建授信申请" phaseType="HEAD" phase="1" type="MANUAL"
+				grantRoleId="#{job.createRole}">
+				<inputDatas>
+					<inputData name="授信申请基础表单" key="baseForm" type="MAP"
+						required="true">
+						<inputData name="客户id" key="customerId" type="STRING"
+							required="true" />
+						<inputData name="申请授信金额" key="creditline" type="DOUBLE"
+							required="true" />
+						<inputData name="产品id" key="productId" type="STRING"
+							required="true" />
+						<inputData name="推介人" key="refereeUserId" type="STRING"
+							required="false" />
+						<inputData name="报单人" key="inputUserId" type="STRING"
+							required="true" />
+					</inputData>
+					<inputData name="房产信息" key="housePropertys" type="LIST">
+						<inputData name="房产信息" key="houseProperty" type="MAP">
+							<inputData name="客户id" key="customerId" type="STRING"
+								length="36" />
+							<inputData name="申请授信金额" key="creditline" type="DOUBLE" />
+							<inputData name="申请授信金额" key="creditline" type="DOUBLE" />
+							<inputData name="申请授信金额" key="creditline" type="DOUBLE" />
+						</inputData>
+					</inputData>
+					<inputData name="影像资料" key="files" type="LIST">
+						<inputData name="身份证照片正面" key="file1" type="file" />
+						<inputData name="身份证照片反面" key="file2" type="file" />
+					</inputData>
+				</inputDatas>
+			</task>
+
+			<task name="提交授信申请" phaseType="MIDWAY" phase="2" type="MANUAL"
+				ownerRole="#{job.createRole}" />
+
+			<task name="风控自动审批1" phaseType="MIDWAY" phase="3" type="AUTO">
+				<worker name="风控自动审批" type="url" checkInterval="15000">
+					<path>/credit/auto_risk</path>
+				</worker>
+			</task>
+
+			<task name="初审" phaseType="MIDWAY" phase="4" type="MANUAL"
+				ownerRole="初审" noticeOwnerRole="true">
+				<skipScript>1.baseForm.loanAmount &lt; 10000</skipScript>
+			</task>
+
+			<task name="复审" phaseType="MIDWAY" phase="5" type="MANUAL"
+				ownerRole="初审" noticeOwnerRole="true">
+				<skipScript>1.baseForm.loanAmount &lt; 50000</skipScript>
+			</task>
+
+			<task name="终审" phaseType="MIDWAY" phase="6" type="MANUAL"
+				ownerRole="初审" noticeOwnerRole="true">
+				<skipScript>1.baseForm.loanAmount &lt; 100000</skipScript>
+			</task>
+
+			<task name="风控自动审批" phaseType="MIDWAY" phase="7" type="MANUAL">
+				<worker name="风控自动审批worker">com.sixliu.credit.worker</worker>
+			</task>
+
+			<task name="合同面签" phaseType="MIDWAY" phase="8" type="MANUAL"
+				ownerRole="合同面签">
+				<inputDatas>
+					<inputData name="影像资料" key="files" type="LIST">
+						<inputData name="身份证照片正面" key="file1" type="file" />
+						<inputData name="身份证照片反面" key="file2" type="file" />
+						<inputData name="授信签约合同" key="file3" type="file" />
+					</inputData>
+				</inputDatas>
+			</task>
+
+			<task name="凭证审核" phaseType="MIDWAY" phase="9" type="MANUAL"
+				ownerRole="凭证审核">
+				<inputDatas>
+					<inputData name="pos凭证" key="voucher" type="MAP"
+						required="true">
+						<inputData name="凭证id" key="voucherId" type="STRING"
+							required="true" />
+						<inputData name="凭证金额" key="amount" type="DOUBLE"
+							required="true" />
+					</inputData>
+				</inputDatas>
+			</task>
+
+			<task name="流程冻结" phaseType="END" phase="7" type="AUTO" />
+
+			<task name="流程通过" phaseType="END" phase="7" type="AUTO">
+				<events>
+					<events name="" type="CREATED"
+						eventWay="UNREQUIRED_NON_TRANSACTION">
+						<Script>短信通知客户审批通过</Script>
+					</events>
+				</events>
+			</task>
+
+			<task name="流程取消" phaseType="END" phase="7" type="AUTO">
+				<events>
+					<events name="" type="CREATED"
+						eventWay="UNREQUIRED_NON_TRANSACTION">
+						<Script>短信通知客户审批取消</Script>
+					</events>
+				</events>
+			</task>
+
+			<task name="流程拒绝" phaseType="MIDWAY" phase="7" type="AUTO">
+				<events>
+					<events name="" type="CREATED"
+						eventWay="UNREQUIRED_NON_TRANSACTION">
+						<Script>短信通知客户审批拒绝</Script>
+					</events>
+				</events>
+			</task>
+		</tasks>
+	</job>
+
+	<job name="居乐贷-商城分期支付流程" createRole="客户">
+		<tasks>
+			<task name="预创建支付申请" phaseType="HEAD" phase="1" type="MANUAL"
+				ownerRole="#{job.createRole}">
+				<inputDatas>
+					<inputData name="支付表单" key="baseForm" type="MAP"
+						required="true">
+						<inputData name="客户id" key="customerId" type="STRING"
+							required="true" />
+						<inputData name="支付金额" key="creditline" type="DOUBLE"
+							required="true" />
+						<inputData name="产品id" key="productId" type="STRING"
+							required="true" />
+					</inputData>
+					<inputData name="支付商品列表" key="goodses" type="LIST">
+						<inputData name="支付商品" key="goods" type="MAP">
+							<inputData name="商品id" key="out_id" type="STRING" />
+							<inputData name="商品名称" key="name" type="STRING" />
+							<inputData name="商品类型" key="type" type="STRING" />
+							<inputData name="商品品牌" key="brand" type="STRING" />
+							<inputData name="数量" key="quantity" type="INT" />
+							<inputData name="单价" key="price" type="DOUBLE" />
+							<inputData name="描述" key="describe" type="STRING" />
+						</inputData>
+					</inputData>
+				</inputDatas>
+			</task>
+
+			<task name="支付确认" phaseType="MIDWAY" phase="2" type="MANUAL"
+				ownerRole="#{job.createRole}" />
+
+			<task name="额度账户处理" phaseType="MIDWAY" phase="3" type="AUTO"
+				ownerRole="system">
+				<worker name="额度账户处理" type="url" checkInterval="15000">
+					<path></path>
+				</worker>
+			</task>
+
+			<task name="风控自动审批" phaseType="MIDWAY" phase="3" type="AUTO">
+				<worker name="风控自动审批" type="url" checkInterval="15000">
+					<path>/credit/auto_risk</path>
+				</worker>
+				<events>
+					<events name="" type="PASSED"
+						eventWay="UNREQUIRED_NON_TRANSACTION">
+						<Script>回调商城支付成功</Script>
+					</events>
+				</events>
+			</task>
+
+			<task name="待放款" phaseType="MIDWAY" phase="4" type="MANUAL"
+				ownerRole="初审" noticeOwnerRole="true">
+				<skipScript>1.baseForm.loanAmount &lt; 10000</skipScript>
+			</task>
+
+			<task name="退款处理" phaseType="MIDWAY" phase="4" type="MANUAL"
+				ownerRole="初审" noticeOwnerRole="true">
+				<skipScript>1.baseForm.loanAmount &lt; 10000</skipScript>
+			</task>
+
+			<task name="流程冻结" phaseType="END" phase="7" type="AUTO" />
+
+			<task name="流程通过" phaseType="END" phase="7" type="AUTO">
+				<events>
+					<events name="" type="CREATED"
+						eventWay="UNREQUIRED_NON_TRANSACTION">
+						<Script>短信通知客户审批通过</Script>
+					</events>
+				</events>
+			</task>
+
+			<task name="流程取消" phaseType="END" phase="7" type="AUTO">
+				<events>
+					<events name="" type="CREATED"
+						eventWay="UNREQUIRED_NON_TRANSACTION">
+						<Script>短信通知客户审批取消</Script>
+					</events>
+				</events>
+			</task>
+
+			<task name="流程拒绝" phaseType="MIDWAY" phase="7" type="AUTO">
+				<events>
+					<events name="" type="CREATED"
+						eventWay="UNREQUIRED_NON_TRANSACTION">
+						<Script>短信通知客户审批拒绝</Script>
+					</events>
+				</events>
+			</task>
+		</tasks>
+	</job>
+</jobs>
