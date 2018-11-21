@@ -1,5 +1,6 @@
 package com.sixliu.workflow.config.dto;
 
+import com.sixliu.workflow.common.constant.PhaseType;
 import com.sixliu.workflow.common.constant.TaskType;
 import com.sixliu.workflow.common.dto.BaseDTO;
 
@@ -19,21 +20,27 @@ import lombok.ToString;
 @ToString(callSuper = true)
 public class TaskModelDTO extends BaseDTO{
 
-	/** 流程作业任务名称 **/
+	/** 流程作业模型id:VARCHAR(36) **/
+	private String jobId;
+	
+	/** 流程作业任务名称:VARCHAR(20) **/
 	private String name;
 
-	/** 流程作业模型id **/
-	private String jobId;
+	/** 阶段类型 :VARCHAR(20)**/
+	private PhaseType phaseType;
 
-	/** 流程作业任务所处阶段 **/
+	/** 流程作业任务所处阶段:INT(4) **/
 	private int phase;
-
-	/** 流程作业任务处理类型 **/
-	private TaskType type;
-
-	/** 流程作业任务处理worker **/
-	private String worker;
 	
-	/**数据备注:VARCHAR(100)**/
+	/** 流程作业任务处理类型:VARCHAR(20) **/
+	private TaskType type;
+	
+	/** 授权角色id:VARCHAR(36) **/
+	private String grantRoleId;
+	
+	/** 跳过脚本:VARCHAR(200) **/
+	private String skipScript;
+	
+	/** 备注:VARCHAR(100) **/
 	private String remark;
 }

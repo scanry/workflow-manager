@@ -42,7 +42,7 @@ public class WorkflowConfigServiceTest extends BaseTest {
 		workflowTaskModel1.setJobId(jobModelId);
 		workflowTaskModel1.setPhase(phase++);
 		workflowTaskModel1.setType(TaskType.MANUAL);
-		workflowTaskModel1.setWorker("sixliu");
+		workflowTaskModel1.setGrantRoleId("sixliu");
 		workflowTaskModel1.setRemark("信贷产品授信流程");
 		workflowTaskModel1.setCreateUserId("sixliu");
 		String taskId = workflowConfigService.addTaskModel(workflowTaskModel1);
@@ -53,7 +53,7 @@ public class WorkflowConfigServiceTest extends BaseTest {
 		workflowTaskModel2.setJobId(jobModelId);
 		workflowTaskModel2.setPhase(phase++);
 		workflowTaskModel2.setType(TaskType.MANUAL);
-		workflowTaskModel2.setWorker("sixliu");
+		workflowTaskModel2.setGrantRoleId("sixliu");
 		workflowTaskModel2.setRemark("信贷产品授信流程");
 		workflowTaskModel2.setCreateUserId("sixliu");
 		taskId = workflowConfigService.addTaskModel(workflowTaskModel2);
@@ -64,7 +64,7 @@ public class WorkflowConfigServiceTest extends BaseTest {
 		workflowTaskModel3.setJobId(jobModelId);
 		workflowTaskModel3.setPhase(phase++);
 		workflowTaskModel3.setType(TaskType.MANUAL);
-		workflowTaskModel3.setWorker("sixliu");
+		workflowTaskModel3.setGrantRoleId("sixliu");
 		workflowTaskModel3.setRemark("信贷产品授信流程");
 		workflowTaskModel3.setCreateUserId("sixliu");
 		taskId = workflowConfigService.addTaskModel(workflowTaskModel3);
@@ -75,7 +75,7 @@ public class WorkflowConfigServiceTest extends BaseTest {
 		workflowTaskModel4.setJobId(jobModelId);
 		workflowTaskModel4.setPhase(phase++);
 		workflowTaskModel4.setType(TaskType.AUTO);
-		workflowTaskModel4.setWorker("sixliu");
+		workflowTaskModel4.setGrantRoleId("sixliu");
 		workflowTaskModel4.setRemark("信贷产品授信流程");
 		workflowTaskModel4.setCreateUserId("sixliu");
 		taskId = workflowConfigService.addTaskModel(workflowTaskModel4);

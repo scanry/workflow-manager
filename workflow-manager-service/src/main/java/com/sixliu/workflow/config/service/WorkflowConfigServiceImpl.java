@@ -44,16 +44,15 @@ public class WorkflowConfigServiceImpl implements WorkflowConfigService {
 		jobModelDao.add(workflowJobModel);
 		return workflowJobModel.getId();
 	}
-	
+
 	@Override
 	public JobModelDTO getJobModelById(String id) {
-		return Convertor.convert(jobModelDao.get(id),()->new JobModelDTO());
+		return Convertor.convert(jobModelDao.get(id), () -> new JobModelDTO());
 	}
-	
+
 	@Override
 	public List<JobModelDTO> listJobModel() {
-		List<JobModel> workflowJobModels = jobModelDao.listAll();
-		return Convertor.convert(workflowJobModels,()->new JobModelDTO());
+		return Convertor.convert(jobModelDao.listAll(), () -> new JobModelDTO());
 	}
 
 	@Override
@@ -73,6 +72,6 @@ public class WorkflowConfigServiceImpl implements WorkflowConfigService {
 	@Override
 	public List<TaskModelDTO> listTaskModelByJobId(String jobId) {
 		List<TaskModel> workflowTaskModels = workflowTaskModelDao.listByJobId(jobId);
-		return Convertor.convert(workflowTaskModels,()->new TaskModelDTO());
+		return Convertor.convert(workflowTaskModels, () -> new TaskModelDTO());
 	}
 }
