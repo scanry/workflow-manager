@@ -36,7 +36,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Component
 @Slf4j
-public class AutoProcessWorkerMangaer {
+public class AutoProcessWorkerMangaer implements AutoApprovalWorkerManager{
 
 	/** 工作线程名字索引 **/
 	private final static AtomicInteger WORKER_THREAD_INDEX = new AtomicInteger(0);
@@ -172,11 +172,28 @@ public class AutoProcessWorkerMangaer {
 		}
 
 	}
+	
+	@Override
+	public void start() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void register(AutoApprovalWorker autoApprovalWorker) {
+		
+	}
 
 	@PreDestroy
 	public void shutdown() {
 		if (null != workerThreadPool) {
 			workerThreadPool.shutdown();
 		}
+	}
+
+	@Override
+	public void synProcess(Task task, AutoApprovalWorker autoApprovalWorker) {
+		// TODO Auto-generated method stub
+		
 	}
 }
