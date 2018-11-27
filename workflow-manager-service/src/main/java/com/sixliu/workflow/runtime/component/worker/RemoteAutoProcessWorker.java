@@ -3,7 +3,7 @@ package com.sixliu.workflow.runtime.component.worker;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
-import com.sixliu.workflow.runtime.component.AutoProcessWorker;
+import com.sixliu.workflow.runtime.component.ApprovalWorker;
 import com.sixliu.workflow.runtime.dto.TaskProcessResult;
 import com.sixliu.workflow.runtime.repository.entity.Worker;
 
@@ -14,7 +14,7 @@ import com.sixliu.workflow.runtime.repository.entity.Worker;
  * @version:
  * @describe //TODO
  */
-public class RemoteAutoProcessWorker implements AutoProcessWorker {
+public class RemoteAutoProcessWorker implements ApprovalWorker{
 
 	private RestTemplate restTemplate;
 

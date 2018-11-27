@@ -15,7 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.sixliu.workflow.common.constant.TaskType;
-import com.sixliu.workflow.runtime.component.AutoProcessWorker;
+import com.sixliu.workflow.runtime.component.ApprovalWorker;
 import com.sixliu.workflow.runtime.dto.TaskProcessResult;
 import com.sixliu.workflow.runtime.repository.dao.TaskDao;
 import com.sixliu.workflow.runtime.repository.dao.WorkerDao;
@@ -23,7 +23,6 @@ import com.sixliu.workflow.runtime.repository.entity.Task;
 import com.sixliu.workflow.runtime.repository.entity.Worker;
 import com.sixliu.workflow.runtime.status.TaskStatusMachine;
 import com.sixliu.workflow.runtime.status.TaskStatusMachineFactory;
-import com.sixliu.workflow.runtime.status.TaskStatusMachine.CompleteCallback;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -36,7 +35,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Component
 @Slf4j
-public class AutoProcessWorkerMangaer implements AutoApprovalWorkerManager{
+public class ApprovalWorkerMangaerImpl implements AutoApprovalWorkerManager {
 
 	/** 工作线程名字索引 **/
 	private final static AtomicInteger WORKER_THREAD_INDEX = new AtomicInteger(0);
@@ -71,12 +70,10 @@ public class AutoProcessWorkerMangaer implements AutoApprovalWorkerManager{
 	/** 定时扫描任务延迟时间历史集合,用于打散定时扫描任务的时间分布 **/
 	private TreeSet<Long> initialDelayHistory;
 
-	private CompleteCallback completeCallback;
 
 	@PostConstruct
 	public void init() {
 		this.initialDelayHistory = new TreeSet<>();
-		this.completeCallback = jobId -> noticeProcessNextTask(jobId);
 		this.workerThreadPool = new ScheduledThreadPoolExecutor(workerThreads, this::newWorkerThread);
 		List<Worker> workflowTaskWorkers = workflowTaskWorkerDao.listAll();
 		for (Worker workflowTaskWorker : workflowTaskWorkers) {
@@ -86,9 +83,12 @@ public class AutoProcessWorkerMangaer implements AutoApprovalWorkerManager{
 		}
 	}
 
-	public void submitTaskProcessResult(TaskProcessResult taskProcessResult) {
+	@Override
+	public void execute(String taskId, ApprovalWorker autoApprovalWorker) {
+		TaskProcessResult taskProcessResult = autoApprovalWorker.process(taskId);
 		TaskStatusMachine taskStatusMachine = taskStatusMachineFactory.get(taskProcessResult.getStatus());
-		taskStatusMachine.process(taskProcessResult, completeCallback);
+		taskStatusMachine.process(taskProcessResult);
+		noticeProcessNextTask(taskProcessResult.getJobId());
 	}
 
 	/**
@@ -96,7 +96,7 @@ public class AutoProcessWorkerMangaer implements AutoApprovalWorkerManager{
 	 * 
 	 * @param jobId
 	 */
-	public void noticeProcessNextTask(String jobId) {
+	private void noticeProcessNextTask(String jobId) {
 		workerThreadPool.execute(new AutoProcessWorkerBroadcaster(jobId));
 	}
 
@@ -129,14 +129,13 @@ public class AutoProcessWorkerMangaer implements AutoApprovalWorkerManager{
 		public void process(Task task) {
 			List<Task> pendingTasks = null;
 			if (null == task) {
-				pendingTasks = workflowTaskDao.listForTimingScan(workflowTaskWorker.getId(),"");
+				pendingTasks = workflowTaskDao.listForTimingScan(workflowTaskWorker.getId(), "");
 			} else {
 				pendingTasks = Arrays.asList(task);
 			}
 			for (Task item : pendingTasks) {
-				AutoProcessWorker wutoProcessWorker = remoteAutoProcessWorkerFactory.getOrNew(workflowTaskWorker);
-				TaskProcessResult taskProcessResult = wutoProcessWorker.process(item.getId());
-				submitTaskProcessResult(taskProcessResult);
+				ApprovalWorker wutoProcessWorker = remoteAutoProcessWorkerFactory.getOrNew(workflowTaskWorker);
+				execute(item.getId(), wutoProcessWorker);
 			}
 			log.info("AutoProcessWorkerProxy");
 		}
@@ -172,16 +171,16 @@ public class AutoProcessWorkerMangaer implements AutoApprovalWorkerManager{
 		}
 
 	}
-	
+
 	@Override
 	public void start() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
-	public void register(AutoApprovalWorker autoApprovalWorker) {
-		
+	public void register(ApprovalWorker autoApprovalWorker) {
+
 	}
 
 	@PreDestroy
@@ -189,11 +188,5 @@ public class AutoProcessWorkerMangaer implements AutoApprovalWorkerManager{
 		if (null != workerThreadPool) {
 			workerThreadPool.shutdown();
 		}
-	}
-
-	@Override
-	public void synProcess(Task task, AutoApprovalWorker autoApprovalWorker) {
-		// TODO Auto-generated method stub
-		
 	}
 }

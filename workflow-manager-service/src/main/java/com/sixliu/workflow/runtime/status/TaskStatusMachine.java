@@ -14,11 +14,5 @@ public interface TaskStatusMachine {
 
 	TaskStatus getTaskStatus();
 	
-	void process(TaskProcessResult taskProcessResult,CompleteCallback completeCallback);
-	
-	@FunctionalInterface
-	public interface CompleteCallback{
-		
-		void complete(String jobId);
-	}
+	void process(TaskProcessResult taskProcessResult);
 }

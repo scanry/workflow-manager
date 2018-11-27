@@ -58,12 +58,11 @@ public abstract class AbstractTaskStatusMachine implements TaskStatusMachine {
 	}
 
 	@Override
-	public final void process(TaskProcessResult taskProcessResult, CompleteCallback completeCallback) {
+	public final void process(TaskProcessResult taskProcessResult) {
 		transactionalHelper.doSomething(() -> {
 			processByTransactional(taskProcessResult);
 			return null;
 		});
-		completeCallback.complete(taskProcessResult.getJobId());
 	}
 
 	private void processByTransactional(TaskProcessResult taskProcessResult) {

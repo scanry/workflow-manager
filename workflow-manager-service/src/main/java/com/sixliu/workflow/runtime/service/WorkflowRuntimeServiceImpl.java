@@ -19,7 +19,7 @@ import com.sixliu.workflow.config.repository.dao.JobModelDao;
 import com.sixliu.workflow.config.repository.dao.TaskModelDao;
 import com.sixliu.workflow.config.repository.entity.JobModel;
 import com.sixliu.workflow.config.repository.entity.TaskModel;
-import com.sixliu.workflow.runtime.component.worker.AutoProcessWorkerMangaer;
+import com.sixliu.workflow.runtime.component.worker.ApprovalWorkerMangaerImpl;
 import com.sixliu.workflow.runtime.dto.CreateJobDTO;
 import com.sixliu.workflow.runtime.dto.FlowTask;
 import com.sixliu.workflow.runtime.dto.TaskProcessResult;
@@ -55,7 +55,8 @@ public class WorkflowRuntimeServiceImpl implements WorkflowRuntimeService {
 	private TaskDao workflowTaskDao;
 
 	@Autowired
-	private AutoProcessWorkerMangaer autoProcessWorkerMangaer;
+	private ApprovalWorkerMangaerImpl autoProcessWorkerMangaer;
+	
 
 	@Transactional
 	@Override
@@ -119,7 +120,9 @@ public class WorkflowRuntimeServiceImpl implements WorkflowRuntimeService {
 
 	@Override
 	public void submitTaskProcessResult(TaskProcessResult taskProcessResult) {
-		autoProcessWorkerMangaer.submitTaskProcessResult(taskProcessResult);
+		autoProcessWorkerMangaer.execute(taskProcessResult.getTaskId(),taskId->{
+			return taskProcessResult;
+		});
 	}
 
 	@Override

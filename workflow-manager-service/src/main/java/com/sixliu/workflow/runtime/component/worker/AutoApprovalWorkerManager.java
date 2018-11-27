@@ -1,6 +1,6 @@
 package com.sixliu.workflow.runtime.component.worker;
 
-import com.sixliu.workflow.runtime.repository.entity.Task;
+import com.sixliu.workflow.runtime.component.ApprovalWorker;
 
 /**
  * @author:MG01867
@@ -13,9 +13,9 @@ public interface AutoApprovalWorkerManager {
 
 	void start();
 
-	void register(AutoApprovalWorker autoApprovalWorker);
+	void register(ApprovalWorker autoApprovalWorker);
 
-	void synProcess(Task task, AutoApprovalWorker autoApprovalWorker);
+	void execute(String taskId,ApprovalWorker autoApprovalWorker);
 
 	void shutdown();
 }

@@ -3,7 +3,7 @@ package com.sixliu.workflow.runtime.component.worker;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-import com.sixliu.workflow.runtime.component.AutoProcessWorker;
+import com.sixliu.workflow.runtime.component.ApprovalWorker;
 import com.sixliu.workflow.runtime.repository.entity.Worker;
 
 /**
@@ -18,7 +18,7 @@ public class RemoteAutoProcessWorkerFactory {
 
 	private RestTemplate  restTemplate;
 	
-	public AutoProcessWorker getOrNew(Worker workflowTaskWorker) {
+	public ApprovalWorker getOrNew(Worker workflowTaskWorker) {
 		return new RemoteAutoProcessWorker(restTemplate, workflowTaskWorker);
 	}
 }
