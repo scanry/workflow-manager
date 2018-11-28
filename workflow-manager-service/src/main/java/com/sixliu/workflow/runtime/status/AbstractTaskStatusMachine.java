@@ -9,7 +9,7 @@ import com.sixliu.workflow.common.component.TransactionalHelper;
 import com.sixliu.workflow.common.constant.JobStatus;
 import com.sixliu.workflow.common.constant.TaskStatus;
 import com.sixliu.workflow.common.service.HealthyService;
-import com.sixliu.workflow.config.repository.dao.TaskModelDao;
+import com.sixliu.workflow.model.repository.dao.TaskModelDao;
 import com.sixliu.workflow.runtime.dto.TaskProcessResult;
 import com.sixliu.workflow.runtime.repository.dao.JobDao;
 import com.sixliu.workflow.runtime.repository.dao.TaskDao;
@@ -31,22 +31,22 @@ public abstract class AbstractTaskStatusMachine implements TaskStatusMachine {
 	private TaskStatus taskStatus;
 
 	@Autowired
-	private JobDao workflowJobDao;
+	private JobDao jobDao;
 
 	@Autowired
-	private TaskModelDao workflowTaskModelDao;
+	private TaskModelDao taskModelDao;
 
 	@Autowired
-	private TaskDao workflowTaskDao;
+	private TaskDao taskDao;
 
 	@Autowired
 	private TaskStatusMachineFactory taskStatusMachineFactory;
 
 	@Autowired
 	private TransactionalHelper transactionalHelper;
-	
+
 	@Autowired
-	private HealthyService workflowService;
+	private HealthyService healthyService;
 
 	public AbstractTaskStatusMachine(TaskStatus taskStatus) {
 		this.taskStatus = taskStatus;
@@ -58,36 +58,35 @@ public abstract class AbstractTaskStatusMachine implements TaskStatusMachine {
 	}
 
 	@Override
-	public final void process(TaskProcessResult taskProcessResult) {
-		transactionalHelper.doSomething(() -> {
-			processByTransactional(taskProcessResult);
-			return null;
+	public final boolean process(TaskProcessResult taskProcessResult) {
+		return transactionalHelper.doSomething(() -> {
+			return processByTransactional(taskProcessResult);
 		});
 	}
 
-	private void processByTransactional(TaskProcessResult taskProcessResult) {
-		Job workflowJob = workflowJobDao.get(taskProcessResult.getJobId());
-		if (null == workflowJob) {
+	private boolean processByTransactional(TaskProcessResult taskProcessResult) {
+		Job job = jobDao.get(taskProcessResult.getJobId());
+		if (null == job) {
 			throw new IllegalArgumentException(
 					String.format("This Job[%s] is non-existent", taskProcessResult.getJobId()));
 		}
-		if (JobStatus.WORKING != workflowJob.getStatus()) {
+		if (JobStatus.WORKING != job.getStatus()) {
 			throw new UnsupportedOperationException(
-					String.format("The job[%s] is ended[%s]", workflowJob.getId(), workflowJob.getStatus()));
+					String.format("The job[%s] is ended[%s]", job.getId(), job.getStatus()));
 		}
-		if (null != workflowJob.getLockUrl()) {
+		if (null != job.getLockUrl()) {
 			throw new IllegalArgumentException(
-					String.format("The Job[%s] was be lock by target[%s]", workflowJob.getLockUrl()));
+					String.format("The Job[%s] was be lock by target[%s]", job.getLockUrl()));
 		}
-		int locked = workflowJobDao.tryLock(workflowJob.getId(),workflowService.getUrl(), workflowJob.getVersion());
+		int locked = jobDao.tryLock(job.getId(), healthyService.getUrl(), job.getVersion());
 		if (1 == locked) {
-			Task workflowTask = workflowTaskDao.get(taskProcessResult.getTaskId());
+			Task workflowTask = taskDao.get(taskProcessResult.getTaskId());
 			try {
 				TaskStatus oldStatus = workflowTask.getStatus();
-				Task nextWorkflowTask = doProcess(workflowJob, workflowTask, taskProcessResult);
+				Task nextWorkflowTask = doProcess(job, workflowTask, taskProcessResult);
 				TaskStatus newStatus = workflowTask.getStatus();
 				if (oldStatus != newStatus) {
-					workflowTaskDao.update(workflowTask);
+					taskDao.update(workflowTask);
 				}
 				if (StringUtils.isNotBlank(taskProcessResult.getInnerOpinion())
 						|| StringUtils.isNotBlank(taskProcessResult.getOuterOpinion())) {
@@ -95,32 +94,33 @@ public abstract class AbstractTaskStatusMachine implements TaskStatusMachine {
 					workflowTask.setOuterOpinion(taskProcessResult.getOuterOpinion());
 				}
 				if (null != nextWorkflowTask) {
-					workflowTaskDao.insert(nextWorkflowTask);
+					taskDao.insert(nextWorkflowTask);
 				}
+				return true;
 			} catch (Exception exception) {
 				log.error(String.format("The user[%s] process task[%s] of job[%s] err", taskProcessResult.getUserId(),
-						workflowTask.getId(), workflowJob.getId()), exception);
+						workflowTask.getId(), job.getId()), exception);
 			} finally {
-				workflowJobDao.unlock(workflowJob.getId(), workflowJob.getVersion() + 1);
+				jobDao.unlock(job.getId(), job.getVersion() + 1);
 			}
 		} else {
-			log.warn(String.format("Try to lock job[%s] failed", workflowJob.getId()));
+			log.warn(String.format("Try to lock job[%s] failed", job.getId()));
 		}
+		return false;
 	}
 
-	protected abstract Task doProcess(Job workflowJob, Task workflowTask,
-			TaskProcessResult taskProcessResult);
+	protected abstract Task doProcess(Job workflowJob, Task workflowTask, TaskProcessResult taskProcessResult);
 
 	@Override
 	public final TaskStatus getTaskStatus() {
 		return taskStatus;
 	}
 
-	public final TaskModelDao getWorkflowTaskModelDao() {
-		return workflowTaskModelDao;
+	public final TaskModelDao getTaskModelDao() {
+		return taskModelDao;
 	}
 
-	public final TaskDao getWorkflowTaskDao() {
-		return workflowTaskDao;
+	public final TaskDao getTaskDao() {
+		return taskDao;
 	}
 }

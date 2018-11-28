@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.sixliu.workflow.BaseTest;
 import com.sixliu.workflow.common.constant.EventType;
-import com.sixliu.workflow.config.repository.dao.EventModelDao;
-import com.sixliu.workflow.config.repository.entity.EventModel;
+import com.sixliu.workflow.model.repository.dao.EventModelDao;
+import com.sixliu.workflow.model.repository.entity.EventModel;
 
 /**    
  * @author: sixliu

@@ -26,7 +26,7 @@ public interface TaskDao {
 	
 	List<Task> listByRoleIdAndStatus(@Param("roleId") String roleId,@Param("status") TaskStatus status);
 	
-	List<Task> listForTimingScan(@Param("taskModelId") String taskModelId,@Param("phase") String phase);
+	List<Task> listForTimingScan(@Param("taskModeId") String taskModeId);
 
 	int update(Task workflowTask);
 	

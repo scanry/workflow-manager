@@ -6,9 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.sixliu.workflow.BaseTest;
 import com.sixliu.workflow.common.constant.TaskType;
-import com.sixliu.workflow.config.dto.JobModelDTO;
-import com.sixliu.workflow.config.dto.TaskModelDTO;
-import com.sixliu.workflow.config.service.WorkflowConfigService;
+import com.sixliu.workflow.model.dto.JobModelDTO;
+import com.sixliu.workflow.model.dto.TaskModelDTO;
+import com.sixliu.workflow.model.service.WorkflowConfigService;
 
 /**
  * @author: sixliu

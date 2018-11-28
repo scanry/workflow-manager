@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.sixliu.workflow.BaseTest;
 import com.sixliu.workflow.common.constant.TaskStatus;
-import com.sixliu.workflow.config.repository.dao.TaskModelDao;
-import com.sixliu.workflow.config.repository.entity.TaskModel;
+import com.sixliu.workflow.model.repository.dao.TaskModelDao;
+import com.sixliu.workflow.model.repository.entity.TaskModel;
 import com.sixliu.workflow.runtime.repository.dao.TaskDao;
 import com.sixliu.workflow.runtime.repository.entity.Task;
 

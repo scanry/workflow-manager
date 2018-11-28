@@ -14,5 +14,5 @@ public interface TaskStatusMachine {
 
 	TaskStatus getTaskStatus();
 	
-	void process(TaskProcessResult taskProcessResult);
+	boolean process(TaskProcessResult taskProcessResult);
 }

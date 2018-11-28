@@ -15,14 +15,14 @@ import com.sixliu.app.user.service.UserRoleService;
 import com.sixliu.workflow.common.constant.JobStatus;
 import com.sixliu.workflow.common.constant.TaskStatus;
 import com.sixliu.workflow.common.util.FlowUtils;
-import com.sixliu.workflow.config.repository.dao.JobModelDao;
-import com.sixliu.workflow.config.repository.dao.TaskModelDao;
-import com.sixliu.workflow.config.repository.entity.JobModel;
-import com.sixliu.workflow.config.repository.entity.TaskModel;
-import com.sixliu.workflow.runtime.component.worker.ApprovalWorkerMangaerImpl;
+import com.sixliu.workflow.model.repository.dao.JobModelDao;
+import com.sixliu.workflow.model.repository.dao.TaskModelDao;
+import com.sixliu.workflow.model.repository.entity.JobModel;
+import com.sixliu.workflow.model.repository.entity.TaskModel;
 import com.sixliu.workflow.runtime.dto.CreateJobDTO;
 import com.sixliu.workflow.runtime.dto.FlowTask;
 import com.sixliu.workflow.runtime.dto.TaskProcessResult;
+import com.sixliu.workflow.runtime.engine.ApprovalEngineImpl;
 import com.sixliu.workflow.runtime.repository.dao.JobDao;
 import com.sixliu.workflow.runtime.repository.dao.TaskDao;
 import com.sixliu.workflow.runtime.repository.entity.Job;
@@ -55,7 +55,7 @@ public class WorkflowRuntimeServiceImpl implements WorkflowRuntimeService {
 	private TaskDao workflowTaskDao;
 
 	@Autowired
-	private ApprovalWorkerMangaerImpl autoProcessWorkerMangaer;
+	private ApprovalEngineImpl autoProcessWorkerMangaer;
 	
 
 	@Transactional

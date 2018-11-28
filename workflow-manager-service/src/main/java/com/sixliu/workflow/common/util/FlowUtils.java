@@ -4,8 +4,8 @@ import java.util.Date;
 
 import com.sixliu.workflow.common.constant.JobStatus;
 import com.sixliu.workflow.common.constant.TaskStatus;
-import com.sixliu.workflow.config.repository.entity.JobModel;
-import com.sixliu.workflow.config.repository.entity.TaskModel;
+import com.sixliu.workflow.model.repository.entity.JobModel;
+import com.sixliu.workflow.model.repository.entity.TaskModel;
 import com.sixliu.workflow.runtime.dto.FlowTask;
 import com.sixliu.workflow.runtime.repository.entity.Job;
 import com.sixliu.workflow.runtime.repository.entity.Task;

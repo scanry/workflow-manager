@@ -1,6 +1,6 @@
 package com.sixliu.workflow.runtime.repository.entity;
 
-import com.sixliu.workflow.config.repository.entity.JobModel;
+import com.sixliu.workflow.model.repository.entity.JobModel;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;

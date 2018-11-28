@@ -40,10 +40,7 @@ public enum TaskStatus {
 	OVERRULE,
 	
 	/** 异常 **/
-	ERROR,
-
-	/** 挂起 **/
-	HANG_UP;
+	ERROR;
 
 	private final static Set<String> names;
 

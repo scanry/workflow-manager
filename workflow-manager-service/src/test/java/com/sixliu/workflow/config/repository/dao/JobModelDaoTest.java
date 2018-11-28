@@ -4,8 +4,8 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.sixliu.workflow.BaseTest;
-import com.sixliu.workflow.config.repository.dao.JobModelDao;
-import com.sixliu.workflow.config.repository.entity.JobModel;
+import com.sixliu.workflow.model.repository.dao.JobModelDao;
+import com.sixliu.workflow.model.repository.entity.JobModel;
 
 /**
 *@author:MG01867
