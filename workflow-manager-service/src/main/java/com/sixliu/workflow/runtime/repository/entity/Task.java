@@ -42,11 +42,8 @@ public class Task extends AuditBaseEntity {
 	private String roleId;
 	
 	/** 流程作业任务处理worker或者流程作业任务所属角色 **/
-	private String worker;
+	private String owner;
 
-	/** 流程作业任务所属用户 **/
-	private String ownerUserId;
-	
 	/**流程任务内部意见**/
 	private String innerOpinion;
 	

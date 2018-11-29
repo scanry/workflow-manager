@@ -39,7 +39,7 @@ public class TaskDaoTest extends BaseTest{
 			workflowTask.setPhase(workflowTaskModel.getPhase());
 			workflowTask.setType(workflowTaskModel.getType());
 			workflowTask.setStatus(TaskStatus.POOLING);
-			workflowTask.setWorker("sixliu");
+			workflowTask.setOwner("sixliu");
 			workflowTask.setCreateUserId("sixliu");
 			workflowTask.setUpdateUserId("sixliu");
 			workflowTaskDao.insert(workflowTask);

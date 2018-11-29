@@ -2,7 +2,6 @@ package com.sixliu.workflow.common.service;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -18,13 +17,10 @@ import com.sixliu.workflow.ServiceName;
  */
 @FeignClient(ServiceName.SERVICE_NAME)
 @Validated
-public interface HealthyService {
+@RequestMapping("/system")
+public interface SystemService {
 
-	String URL_PRE = "check";
-
-	@RequestMapping(value = "/"+URL_PRE + "/{uuid}", method = RequestMethod.GET)
+	@RequestMapping(value = "getUser", method = RequestMethod.GET)
 	@ResponseBody
-	boolean check(@PathVariable("uuid") String uuid);
-
-	String getUrl();
+	String getSytemUser();
 }

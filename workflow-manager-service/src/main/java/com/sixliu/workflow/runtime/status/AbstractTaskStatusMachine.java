@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.sixliu.workflow.common.component.TransactionalHelper;
 import com.sixliu.workflow.common.constant.JobStatus;
 import com.sixliu.workflow.common.constant.TaskStatus;
-import com.sixliu.workflow.common.service.HealthyService;
+import com.sixliu.workflow.common.service.SystemService;
 import com.sixliu.workflow.model.repository.dao.TaskModelDao;
 import com.sixliu.workflow.runtime.dto.TaskProcessResult;
 import com.sixliu.workflow.runtime.repository.dao.JobDao;
@@ -46,7 +46,7 @@ public abstract class AbstractTaskStatusMachine implements TaskStatusMachine {
 	private TransactionalHelper transactionalHelper;
 
 	@Autowired
-	private HealthyService healthyService;
+	private SystemService systemService;
 
 	public AbstractTaskStatusMachine(TaskStatus taskStatus) {
 		this.taskStatus = taskStatus;
@@ -78,7 +78,7 @@ public abstract class AbstractTaskStatusMachine implements TaskStatusMachine {
 			throw new IllegalArgumentException(
 					String.format("The Job[%s] was be lock by target[%s]", job.getLockUrl()));
 		}
-		int locked = jobDao.tryLock(job.getId(), healthyService.getUrl(), job.getVersion());
+		int locked = jobDao.tryLock(job.getId(), systemService.getSytemUser(), job.getVersion());
 		if (1 == locked) {
 			Task workflowTask = taskDao.get(taskProcessResult.getTaskId());
 			try {

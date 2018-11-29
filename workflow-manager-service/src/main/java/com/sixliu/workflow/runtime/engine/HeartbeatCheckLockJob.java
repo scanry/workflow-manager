@@ -1,4 +1,4 @@
-package com.sixliu.workflow.runtime.status;
+package com.sixliu.workflow.runtime.engine;
 
 import java.util.Collections;
 import java.util.List;
@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-import com.sixliu.workflow.common.service.HealthyServiceImpl;
+import com.sixliu.workflow.common.service.SystemServiceImpl;
 import com.sixliu.workflow.runtime.repository.dao.JobDao;
 import com.sixliu.workflow.runtime.repository.entity.Job;
 
@@ -69,7 +69,7 @@ public class HeartbeatCheckLockJob {
 			for (Job job : lockJobs) {
 				Boolean result = false;
 				if (StringUtils.contains(job.getLockUrl(),localUrl)) {
-					result =StringUtils.contains(job.getLockUrl(), HealthyServiceImpl.UUID);
+					result =StringUtils.contains(job.getLockUrl(), SystemServiceImpl.UUID);
 				} else {
 					try {
 						result = restTemplate.getForObject(job.getLockUrl(), Boolean.class);

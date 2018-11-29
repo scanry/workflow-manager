@@ -1,6 +1,5 @@
 package com.sixliu.workflow.runtime.engine;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.TreeSet;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -14,18 +13,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.sixliu.workflow.common.constant.TaskStatus;
-import com.sixliu.workflow.common.constant.TaskType;
+import com.sixliu.workflow.common.service.SystemService;
 import com.sixliu.workflow.runtime.dto.TaskProcessResult;
 import com.sixliu.workflow.runtime.repository.dao.TaskDao;
 import com.sixliu.workflow.runtime.repository.dao.WorkerDao;
-import com.sixliu.workflow.runtime.repository.entity.Task;
 import com.sixliu.workflow.runtime.repository.entity.Worker;
 import com.sixliu.workflow.runtime.status.TaskStatusMachine;
 import com.sixliu.workflow.runtime.status.TaskStatusMachineFactory;
 import com.sixliu.workflow.runtime.worker.ApprovalWorker;
 import com.sixliu.workflow.runtime.worker.ApprovalWorkerFactory;
-
 
 /**
  * @author:MG01867
@@ -59,13 +55,16 @@ public class ApprovalEngineImpl implements ApprovalEngine {
 	private ApprovalWorkerFactory approvalWorkerFactory;
 
 	@Autowired
-	private TaskDao workflowTaskDao;
+	private TaskDao taskDao;
 
 	@Autowired
 	private WorkerDao workerDao;
 
 	@Autowired
 	private TaskStatusMachineFactory taskStatusMachineFactory;
+
+	@Autowired
+	private SystemService healthyService;
 
 	@PostConstruct
 	public synchronized void init() {
@@ -85,8 +84,11 @@ public class ApprovalEngineImpl implements ApprovalEngine {
 				long lastInitialDelay = initialDelayHistory.last();
 				long initialDelay = lastInitialDelay + initialDelayIncFactor;
 				initialDelayHistory.add(initialDelay);
-				workerThreadPool.scheduleAtFixedRate(new TimingScanTaskApprovalWorker(worker), initialDelay,
-						worker.getCheckInterval(), TimeUnit.MILLISECONDS);
+				workerThreadPool
+						.scheduleAtFixedRate(
+								new TimingScanPendingAutoApprovalTask(worker, taskDao, healthyService, this,
+										approvalWorkerFactory),
+								initialDelay, worker.getCheckInterval(), TimeUnit.MILLISECONDS);
 			}
 		}
 	}
@@ -96,67 +98,10 @@ public class ApprovalEngineImpl implements ApprovalEngine {
 		TaskProcessResult taskProcessResult = approvalWorker.process(taskId);
 		TaskStatusMachine taskStatusMachine = taskStatusMachineFactory.get(taskProcessResult.getStatus());
 		taskStatusMachine.process(taskProcessResult);
-		workerThreadPool.execute(new ApprovalWorkerBroadcaster(taskProcessResult.getJobId()));
-	}
-	
-	private void execute(String taskId) {
-		Worker worker = workerDao.getByTaskId(taskId);
-		ApprovalWorker approvalWorker = approvalWorkerFactory.getOrNew(worker);
-		execute(taskId, approvalWorker);
+		workerThreadPool.execute(
+				new NotifyAutoApprovalNextTaskWorker(taskProcessResult.getJobId(), taskDao, this, healthyService));
 	}
 
-	public class TimingScanTaskApprovalWorker implements Runnable {
-
-		private Worker worker;
-
-		protected TimingScanTaskApprovalWorker(Worker worker) {
-			this.worker = worker;
-		}
-
-		public void process(Task task) {
-			List<Task> pendingTasks = null;
-			if (null == task) {
-				pendingTasks = workflowTaskDao.listForTimingScan(worker.getTaskId());
-			} else {
-				pendingTasks = Arrays.asList(task);
-			}
-			for (Task item : pendingTasks) {
-				execute(item.getId());
-			}
-		}
-
-		@Override
-		public void run() {
-			process(null);
-		}
-	}
-
-	//autoClaim
-	public class ApprovalWorkerBroadcaster implements Runnable {
-
-		private String jobId;
-
-		protected ApprovalWorkerBroadcaster(String jobId) {
-			this.jobId = jobId;
-		}
-
-		@Override
-		public void run() {
-			Task task = workflowTaskDao.getByJobIdForPooling(jobId);
-			if (null != task && TaskType.AUTO == task.getType()) {
-				TaskStatusMachine taskStatusMachine = taskStatusMachineFactory.get(TaskStatus.POOLING);
-				TaskProcessResult taskProcessResult = new TaskProcessResult();
-				taskProcessResult.setJobId(task.getJobId());
-				taskProcessResult.setTaskId(task.getId());
-				taskProcessResult.setStatus(TaskStatus.PENDING);
-				taskProcessResult.setUserId("system");
-				taskStatusMachine.process(taskProcessResult);
-				execute(task.getId());
-			}
-		}
-	}
-	
-	
 	@PreDestroy
 	public void shutdown() {
 		if (null != workerThreadPool) {

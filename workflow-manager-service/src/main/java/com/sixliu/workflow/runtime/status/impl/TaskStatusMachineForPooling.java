@@ -30,7 +30,7 @@ public class TaskStatusMachineForPooling extends AbstractTaskStatusMachine {
 					taskProcessResult.getTaskId(), taskProcessResult.getStatus()));
 		}
 		workflowTask.setStatus(taskProcessResult.getStatus());
-		workflowTask.setOwnerUserId(taskProcessResult.getUserId());
+		workflowTask.setOwner(taskProcessResult.getUserId());
 		workflowTask.setUpdateUserId(taskProcessResult.getUserId());
 		return null;
 	}

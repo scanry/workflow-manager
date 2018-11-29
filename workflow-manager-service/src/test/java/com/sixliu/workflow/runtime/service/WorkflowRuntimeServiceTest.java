@@ -1,6 +1,7 @@
 package com.sixliu.workflow.runtime.service;
 
 import java.util.List;
+import java.util.concurrent.Executors;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,7 @@ public class WorkflowRuntimeServiceTest extends BaseTest {
 	
 	@Test
 	public void testCreateJob(){
+		Executors.newFixedThreadPool(1);
 		String jobId=workflowRuntimeService.createJob(null);
 		checkOk(jobId);
 	}
